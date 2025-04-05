@@ -8,7 +8,7 @@ public class HomeController {
 
     @GetMapping("/")
     public String home() {
-        return "Welcome to Flexi Medical Dispatch ! <a href='flexi-med-front-itcp.vercel.app'>click here to begin</a>";
+        return "Welcome to Flexi Medical Dispatch ! <a href='https://flexi-med-front-itcp.vercel.app/'>click here to begin</a>";
     }
 }
 
