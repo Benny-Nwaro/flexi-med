@@ -1,9 +1,9 @@
 package com.example.flexiMed.auth;
 
 import com.example.flexiMed.security.JwtUtil;
-import com.example.flexiMed.users.UserDTO;
-import com.example.flexiMed.users.UserEntity;
-import com.example.flexiMed.users.UserService;
+import com.example.flexiMed.dto.UserDTO;
+import com.example.flexiMed.model.UserEntity;
+import com.example.flexiMed.service.UserService;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;

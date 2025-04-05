@@ -2,10 +2,10 @@ package com.example.flexiMed.auth;
 
 import com.example.flexiMed.exceptions.ErrorResponse;
 import com.example.flexiMed.security.JwtUtil;
-import com.example.flexiMed.users.Role;
-import com.example.flexiMed.users.UserEntity;
-import com.example.flexiMed.users.UserMapper;
-import com.example.flexiMed.users.UserService;
+import com.example.flexiMed.enums.Role;
+import com.example.flexiMed.model.UserEntity;
+import com.example.flexiMed.mapper.UserMapper;
+import com.example.flexiMed.service.UserService;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;

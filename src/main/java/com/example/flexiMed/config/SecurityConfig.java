@@ -1,10 +1,10 @@
-package com.example.flexiMed.utils.config;
+package com.example.flexiMed.config;
 
 import com.example.flexiMed.auth.CustomOAuth2UserService;
 import com.example.flexiMed.auth.OAuth2LoginSuccessHandler;
 import com.example.flexiMed.security.JwtAuthenticationFilter;
 import com.example.flexiMed.security.JwtUtil;
-import com.example.flexiMed.users.UserService;
+import com.example.flexiMed.service.UserService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -28,6 +28,11 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import java.util.List;
 
+/**
+ * Configuration class for Spring Security settings.
+ * This class defines the security configurations for the application, including JWT authentication,
+ * OAuth2 login, CORS settings, and password encoding.
+ */
 @Configuration
 public class SecurityConfig {
 
@@ -36,32 +41,59 @@ public class SecurityConfig {
     private final CustomOAuth2UserService customOAuth2UserService;
     private final OAuth2LoginSuccessHandler oAuth2LoginSuccessHandler;
 
-
+    /**
+     * Constructor for SecurityConfig.
+     *
+     * @param jwtUtil                  The JWT utility for token operations.
+     * @param userService              The user service for user-related operations.
+     * @param customOAuth2UserService  The custom OAuth2 user service for handling OAuth2 logins.
+     * @param oAuth2LoginSuccessHandler The handler for successful OAuth2 logins.
+     */
     public SecurityConfig(JwtUtil jwtUtil, UserService userService, CustomOAuth2UserService customOAuth2UserService,
                           OAuth2LoginSuccessHandler oAuth2LoginSuccessHandler) {
         this.jwtUtil = jwtUtil;
         this.userService = userService;
         this.customOAuth2UserService = customOAuth2UserService;
         this.oAuth2LoginSuccessHandler = oAuth2LoginSuccessHandler;
-
     }
 
+    /**
+     * Creates a bean for the JWT authentication filter.
+     *
+     * @return The JWT authentication filter.
+     */
     @Bean
     public JwtAuthenticationFilter jwtAuthenticationFilter() {
         return new JwtAuthenticationFilter(jwtUtil, userService);
     }
 
+    /**
+     * Creates a bean for the user details service.
+     *
+     * @return The user details service.
+     */
     @Bean
     public UserDetailsService userDetailsService() {
         return userService;
     }
 
+    /**
+     * Creates a bean for the HTTP session OAuth2 authorization request repository.
+     *
+     * @return The HTTP session OAuth2 authorization request repository.
+     */
     @Bean
     public HttpSessionOAuth2AuthorizationRequestRepository authorizationRequestRepository() {
         return new HttpSessionOAuth2AuthorizationRequestRepository();
     }
 
-
+    /**
+     * Configures the security filter chain.
+     *
+     * @param http The HTTP security builder.
+     * @return The security filter chain.
+     * @throws Exception If an error occurs during configuration.
+     */
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
@@ -95,6 +127,11 @@ public class SecurityConfig {
         return http.build();
     }
 
+    /**
+     * Creates a bean for the OIDC user service.
+     *
+     * @return The OIDC user service.
+     */
     @Bean
     public OidcUserService oidcUserService() {
         return new OidcUserService() {
@@ -107,6 +144,11 @@ public class SecurityConfig {
         };
     }
 
+    /**
+     * Creates a bean for the CORS configuration source.
+     *
+     * @return The CORS configuration source.
+     */
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
@@ -120,6 +162,11 @@ public class SecurityConfig {
         return source;
     }
 
+    /**
+     * Creates a bean for the authentication provider.
+     *
+     * @return The authentication provider.
+     */
     @Bean
     public AuthenticationProvider authenticationProvider() {
         DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
@@ -128,11 +175,23 @@ public class SecurityConfig {
         return authProvider;
     }
 
+    /**
+     * Creates a bean for the authentication manager.
+     *
+     * @param authConfig The authentication configuration.
+     * @return The authentication manager.
+     * @throws Exception If an error occurs during authentication manager creation.
+     */
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration authConfig) throws Exception {
         return authConfig.getAuthenticationManager();
     }
 
+    /**
+     * Creates a bean for the password encoder.
+     *
+     * @return The password encoder.
+     */
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();

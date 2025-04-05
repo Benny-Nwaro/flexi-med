@@ -1,6 +1,6 @@
 package com.example.flexiMed.security;
 
-import com.example.flexiMed.users.UserService;
+import com.example.flexiMed.service.UserService;
 import io.micrometer.common.lang.NonNull;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
