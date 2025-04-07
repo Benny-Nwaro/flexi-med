@@ -1,7 +1,7 @@
 package com.example.flexiMed.repository;
 
-import com.example.flexiMed.model.RequestEntity;
 import com.example.flexiMed.enums.RequestStatus;
+import com.example.flexiMed.model.RequestEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -27,9 +27,17 @@ public interface RequestRepository extends JpaRepository<RequestEntity, UUID> {
      * Counts the number of RequestEntity objects associated with a specific ambulance ID,
      * excluding those with a given request status.
      *
-     * @param ambulanceId   The UUID of the ambulance to search for.
      * @param requestStatus The RequestStatus to exclude from the count.
      * @return The number of RequestEntity objects matching the criteria.
      */
-    long countByAmbulance_IdAndRequestStatusNot(UUID ambulanceId, RequestStatus requestStatus);
+
+
+    /**
+     * Finds a list of RequestEntity objects filtered by request status.
+     *
+     * @param requestStatus The RequestStatus to filter by.
+     * @return A List of RequestEntity objects matching the given status.
+     */
+    List<RequestEntity> findByRequestStatus(RequestStatus requestStatus);
+
 }

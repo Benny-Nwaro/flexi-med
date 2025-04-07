@@ -1,6 +1,7 @@
 package com.example.flexiMed.controller;
 
 import com.example.flexiMed.dto.RequestDTO;
+import com.example.flexiMed.enums.RequestStatus;
 import com.example.flexiMed.service.RequestService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -57,6 +58,20 @@ public class RequestController {
     @GetMapping
     public ResponseEntity<List<RequestDTO>> getAllRequests() {
         List<RequestDTO> requests = requestService.getAllRequests();
+        return ResponseEntity.ok(requests);
+    }
+
+    /**
+     * Endpoint to retrieve all service requests filtered by request status.
+     *
+     * @param status The request status to filter by.
+     * @return A ResponseEntity containing a list of RequestDTOs.
+     */
+    @GetMapping("/status")
+    public ResponseEntity<List<RequestDTO>> getRequestsByStatus(
+            @RequestParam RequestStatus status) {
+
+        List<RequestDTO> requests = requestService.getRequestsByStatus(status);
         return ResponseEntity.ok(requests);
     }
 }

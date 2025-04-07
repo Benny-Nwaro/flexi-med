@@ -1,6 +1,7 @@
 package com.example.flexiMed.services;
 
 import com.example.flexiMed.controller.NotificationController;
+import com.example.flexiMed.dto.AmbulanceNotificationDTO;
 import com.example.flexiMed.exceptions.ErrorResponse.NotificationFailedException;
 import com.example.flexiMed.model.AmbulanceEntity;
 import com.example.flexiMed.model.UserEntity;
@@ -36,7 +37,7 @@ public class NotificationServiceTest {
 
     private UserEntity userEntity;
     private AmbulanceEntity ambulanceEntity;
-    private NotificationController.AmbulanceNotificationDTO notificationDTO;
+    private AmbulanceNotificationDTO notificationDTO;
     private String message;
     private String eta;
     private UUID userId;
@@ -64,7 +65,7 @@ public class NotificationServiceTest {
         message = "Test message";
         eta = "10 minutes";
 
-        notificationDTO = new NotificationController.AmbulanceNotificationDTO();
+        notificationDTO = new AmbulanceNotificationDTO();
         notificationDTO.setUserId(userId);
         notificationDTO.setAmbulanceId(ambulanceId);
         notificationDTO.setMessage(message);
@@ -83,12 +84,12 @@ public class NotificationServiceTest {
     void sendUserNotifications_shouldCallNotificationController() {
         notificationService.sendUserNotifications(message, userEntity, ambulanceEntity, eta);
 
-        ArgumentCaptor<NotificationController.AmbulanceNotificationDTO> notificationDTOArgumentCaptor =
-                ArgumentCaptor.forClass(NotificationController.AmbulanceNotificationDTO.class);
+        ArgumentCaptor<AmbulanceNotificationDTO> notificationDTOArgumentCaptor =
+                ArgumentCaptor.forClass(AmbulanceNotificationDTO.class);
 
         verify(notificationController).sendAmbulanceDispatchedNotification(eq(userId), notificationDTOArgumentCaptor.capture());
 
-        NotificationController.AmbulanceNotificationDTO capturedDTO = notificationDTOArgumentCaptor.getValue();
+        AmbulanceNotificationDTO capturedDTO = notificationDTOArgumentCaptor.getValue();
 
         // Verify field values
         assertEquals(userId, capturedDTO.getUserId());

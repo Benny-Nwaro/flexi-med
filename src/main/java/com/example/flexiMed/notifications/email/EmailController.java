@@ -26,20 +26,16 @@ public class EmailController {
     /**
      * Endpoint to send an email.
      *
-     * @param to      The recipient's email address.
-     * @param subject The email subject.
-     * @param text    The name of the Thymeleaf template to process.
-     * @param context The Thymeleaf context containing variables for the template.
+
      * @return A string indicating the success or failure of the email sending operation.
      * Returns "Email sent successfully!" on success, or an error message on failure.
      */
     @PostMapping("/send")
-    public String sendEmail(@RequestParam String to,
-                            @RequestParam String subject,
-                            @RequestParam String text,
-                            @RequestParam Context context) {
+    public String sendEmail(@RequestBody EmailRequest request) {
         try {
-            emailService.sendEmail(to, subject, text, context);
+            Context context = new Context();
+            context.setVariables(request.getContextVariables());
+            emailService.sendEmail(request.getTo(), request.getSubject(), request.getText(), context);
             return "Email sent successfully!";
         } catch (MessagingException e) {
             return "Failed to send email: " + e.getMessage();

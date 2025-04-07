@@ -70,6 +70,19 @@ public class AmbulanceService {
     }
 
     /**
+     * Retrieves an ambulance by its ID.
+     *
+     * @param id The unique identifier of the ambulance.
+     * @return The AmbulanceDTO containing the details of the ambulance.
+     * @throws RuntimeException If the ambulance is not found.
+     */
+    public AmbulanceDTO getAmbulanceById(UUID id) {
+        return ambulanceRepository.findById(id)
+                .map(AmbulanceMapper::toDTO)
+                .orElseThrow(() -> new RuntimeException("Ambulance not found with ID: " + id));
+    }
+
+    /**
      * Updates an ambulance's availability, driver name, and driver contact.
      *
      * @param id               The unique identifier of the ambulance.

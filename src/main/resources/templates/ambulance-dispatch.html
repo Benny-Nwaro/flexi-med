@@ -1,17 +1,16 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ambulance Dispatched</title>
+    <title th:text="${subject}"></title>
 </head>
-<body style="font-family: Arial, sans-serif; padding: 20px; background-color: #f4f4f4;">
-<h2 style="color: #007bff;">🚑 Ambulance Dispatched</h2>
-<p>Dear <span th:text="${userName}">User</span>,</p>
-<p>Your ambulance request has been received, and an ambulance is on the way.</p>
-<p><strong>Estimated Arrival Time:</strong> <span th:text="${eta}">15 minutes</span></p>
-<p><strong>Ambulance Number:</strong> <span th:text="${ambulanceNumber}">AMB-123</span></p>
-<hr>
+<body>
+<p th:text="${'Hello ' + name + ','}"></p>
+<p>Your ambulance request has been created successfully!</p>
+<p><strong>Request ID:</strong> <span th:text="${requestId}"></span></p>
+<p><strong>Location:</strong> <span th:text="${location}"></span></p>
+<p><strong>Estimated Time of Arrival (ETA):</strong> <span th:text="${eta}"></span></p>
+<p><strong>Ambulance ID:</strong> <span th:text="${ambulanceId}"></span></p>
+<p>We will notify you of any updates regarding your request.</p>
 <p>Thank you for choosing FlexiMed.</p>
 </body>
 </html>

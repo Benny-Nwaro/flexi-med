@@ -3,18 +3,23 @@ package com.example.flexiMed.service;
 import com.example.flexiMed.dto.PatientRecordsDTO;
 import com.example.flexiMed.dto.RequestDTO;
 import com.example.flexiMed.dto.ServiceHistoryDTO;
+import com.example.flexiMed.enums.RequestStatus;
 import com.example.flexiMed.mapper.RequestMapper;
-import com.example.flexiMed.mapper.UserMapper;
 import com.example.flexiMed.model.AmbulanceEntity;
 import com.example.flexiMed.model.RequestEntity;
 import com.example.flexiMed.model.UserEntity;
+import com.example.flexiMed.notifications.email.EmailService;
 import com.example.flexiMed.repository.AmbulanceRepository;
 import com.example.flexiMed.repository.RequestRepository;
 import com.example.flexiMed.repository.UserRepository;
 import com.example.flexiMed.utils.GeoUtils;
 import com.example.flexiMed.utils.TimeUtils;
+import jakarta.mail.MessagingException;
 import jakarta.persistence.EntityNotFoundException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+import org.thymeleaf.context.Context;
 
 import java.util.List;
 import java.util.UUID;
@@ -27,6 +32,8 @@ import java.util.UUID;
  */
 @Service
 public class RequestService {
+    private static final Logger logger = LoggerFactory.getLogger(RequestService.class);
+
 
     private final RequestRepository requestRepository;
     private final AmbulanceRepository ambulanceRepository;
@@ -36,6 +43,7 @@ public class RequestService {
     private final ServiceHistoryService serviceHistoryService;
     private final UserService userService;
     private final NotificationService notificationService;
+    private final EmailService emailService;
 
     /**
      * Constructor to initialize dependencies.
@@ -55,7 +63,8 @@ public class RequestService {
                           AmbulanceService ambulanceService,
                           ServiceHistoryService serviceHistoryService,
                           UserService userService,
-                          NotificationService notificationService) {
+                          NotificationService notificationService,
+                          EmailService emailService) {
         this.requestRepository = requestRepository;
         this.ambulanceRepository = ambulanceRepository;
         this.ambulanceService = ambulanceService;
@@ -64,6 +73,7 @@ public class RequestService {
         this.serviceHistoryService = serviceHistoryService;
         this.userService = userService;
         this.notificationService = notificationService;
+        this.emailService = emailService;
     }
 
     /**
@@ -108,15 +118,50 @@ public class RequestService {
         // Send real-time notifications to the user and the ambulance dispatcher.
         notificationService.sendUserNotifications("Ambulance has been dispatched to your location", user,
                 ambulance, TimeUtils.formatTime(etaInMinutes));
-        notificationService.sendUserNotifications("Your ambulance has been dispatched to Lat: " + request.getLatitude()
-                        + " and Long: " + request.getLongitude(), getDispatcher(ambulance.getDriverContact()), ambulance,
-                TimeUtils.formatTime(etaInMinutes));
+        // Send email notification to the requesting user
+        sendRequestCreatedEmail(user, RequestMapper.toDTO(savedRequest), TimeUtils.formatTime(etaInMinutes));
+
 
         // Record the service history of the request.
         recordServiceHistory(savedRequest);
 
         // Dispatch the ambulance and return the updated request DTO.
         return ambulanceService.dispatchAmbulance(savedRequest);
+    }
+
+
+    /**
+     * Sends an email notification to the user who created a new ambulance request.
+     * This method uses the {@link EmailService} to send an email based on the
+     * "ambulance-dispatch" Thymeleaf template, populated with information about
+     * the created request.
+     *
+     * @param user       The {@link UserEntity} of the user who made the request.
+     * The user's name and email address are extracted from this entity.
+     * @param requestDTO The {@link RequestDTO} containing details of the created request,
+     * such as the request ID, latitude, longitude, and associated ambulance ID.
+     * @param eta        A string representing the estimated time of arrival of the ambulance.
+     */
+    private void sendRequestCreatedEmail(UserEntity user, RequestDTO requestDTO, String eta) {
+        try {
+            Context context = new Context();
+            context.setVariable("name", user.getName()); // User's name for personalization.
+            context.setVariable("requestId", requestDTO.getId()); // Unique identifier of the request.
+            context.setVariable("location", String.format("%.6f, %.6f", requestDTO.getLatitude(),
+                    requestDTO.getLongitude())); // Formatted latitude and longitude of the request.
+            context.setVariable("eta", eta); // Estimated time of arrival of the ambulance.
+            context.setVariable("ambulanceId", requestDTO.getAmbulanceId()); // Identifier of the dispatched ambulance.
+
+            // Use the EmailService to send the email.
+            emailService.sendEmail(user.getEmail(), "Ambulance Request Created",
+                    "ambulance-dispatch", context);
+            logger.info("Email notification sent to user: {} ({}) for Request ID: {}", user.getName(), user.getEmail(),
+                    requestDTO.getId());
+
+        } catch (MessagingException e) {
+            logger.error("Error sending email notification to user: {} ({}) for Request ID: {}", user.getName(),
+                    user.getEmail(), requestDTO.getId(), e);
+        }
     }
 
     /**
@@ -128,6 +173,22 @@ public class RequestService {
         List<RequestEntity> requests = requestRepository.findAll();
         return requests.stream().map(RequestMapper::toDTO).toList();
     }
+
+    /**
+     * Retrieves all ambulance requests with a specific request status.
+     *
+     * @param requestStatus The status of the requests to filter by.
+     * @return A list of RequestDTOs matching the given status.
+     * @throws EntityNotFoundException If no matching requests are found.
+     */
+    public List<RequestDTO> getRequestsByStatus(RequestStatus requestStatus) {
+        List<RequestEntity> requests = requestRepository.findByRequestStatus(requestStatus);
+        if (requests.isEmpty()) {
+            throw new EntityNotFoundException("No requests found with status " + requestStatus);
+        }
+        return requests.stream().map(RequestMapper::toDTO).toList();
+    }
+
 
     /**
      * Records the service history of a request.
@@ -157,16 +218,4 @@ public class RequestService {
         return requests.stream().map(RequestMapper::toDTO).toList();
     }
 
-    /**
-     * Retrieves the user entity of the ambulance dispatcher based on the driver's contact.
-     *
-     * @param driverContact The contact information of the driver.
-     * @return The UserEntity of the dispatcher.
-     * @throws EntityNotFoundException If the dispatcher is not found.
-     */
-    public UserEntity getDispatcher(String driverContact) {
-        return userService.getUserByPhoneNumber(driverContact)
-                .map(UserMapper::toEntity)
-                .orElseThrow(() -> new EntityNotFoundException("Dispatcher not found for phone: " + driverContact));
-    }
 }

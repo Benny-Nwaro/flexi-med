@@ -28,7 +28,6 @@ import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.Mockito.anyString;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -204,10 +203,4 @@ public class RequestServiceTest {
 //        assertEquals(userEntity, result);
 //    }
 
-    @Test
-    void getDispatcher_shouldThrowException_whenDispatcherNotFound() {
-        when(userService.getUserByPhoneNumber(anyString())).thenReturn(Optional.empty());
-
-        assertThrows(EntityNotFoundException.class, () -> requestService.getDispatcher("9876543210"));
-    }
 }

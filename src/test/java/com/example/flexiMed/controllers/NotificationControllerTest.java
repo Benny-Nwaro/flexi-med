@@ -1,6 +1,7 @@
 package com.example.flexiMed.controllers;
 
 import com.example.flexiMed.controller.NotificationController;
+import com.example.flexiMed.dto.AmbulanceNotificationDTO;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -28,7 +29,7 @@ public class NotificationControllerTest {
     private NotificationController notificationController;
 
     private UUID userId;
-    private NotificationController.AmbulanceNotificationDTO notificationDTO;
+    private AmbulanceNotificationDTO notificationDTO;
 
     /**
      * Sets up the test environment before each test method.
@@ -38,7 +39,7 @@ public class NotificationControllerTest {
     void setUp() {
         userId = UUID.randomUUID();
         UUID ambulanceId = UUID.randomUUID();
-        notificationDTO = new NotificationController.AmbulanceNotificationDTO(
+        notificationDTO = new AmbulanceNotificationDTO(
                 userId, ambulanceId, "Test Message", "ABC-123", "John Doe", "123-456-7890", "10 minutes");
     }
 

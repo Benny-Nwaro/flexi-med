@@ -105,6 +105,18 @@ public class AmbulanceController {
     }
 
     /**
+     * Fetches ambulance details by ID.
+     *
+     * @param id The unique identifier of the ambulance.
+     * @return The AmbulanceDTO with the ambulance details.
+     */
+    @GetMapping("/{id}")
+    public ResponseEntity<AmbulanceDTO> getAmbulanceById(@PathVariable UUID id) {
+        AmbulanceDTO ambulanceDTO = ambulanceService.getAmbulanceById(id);
+        return ResponseEntity.ok(ambulanceDTO);
+    }
+
+    /**
      * Endpoint to delete an ambulance from the system.
      *
      * @param id The UUID of the ambulance to be deleted.

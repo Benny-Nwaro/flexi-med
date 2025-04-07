@@ -1,6 +1,7 @@
 package com.example.flexiMed.service;
 
 import com.example.flexiMed.controller.NotificationController;
+import com.example.flexiMed.dto.AmbulanceNotificationDTO;
 import com.example.flexiMed.exceptions.ErrorResponse.NotificationFailedException;
 import com.example.flexiMed.model.AmbulanceEntity;
 import com.example.flexiMed.model.UserEntity;
@@ -34,7 +35,7 @@ public class NotificationService {
      * @throws NotificationFailedException if sending the notification fails.
      */
     public void sendUserNotifications(String message, UserEntity user, AmbulanceEntity ambulance, String etaInMinutes) {
-        NotificationController.AmbulanceNotificationDTO notificationDTO = new NotificationController.AmbulanceNotificationDTO();
+        AmbulanceNotificationDTO notificationDTO = new AmbulanceNotificationDTO();
         notificationDTO.setUserId(user.getUserId());
         notificationDTO.setAmbulanceId(ambulance.getId());
         notificationDTO.setMessage(message);
