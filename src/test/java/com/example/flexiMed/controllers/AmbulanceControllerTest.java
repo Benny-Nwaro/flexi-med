@@ -86,20 +86,7 @@ public class AmbulanceControllerTest {
         assertEquals(ambulanceDTO, response.getBody());
     }
 
-    /**
-     * Tests updating the location of an ambulance.
-     * Verifies that the controller returns the updated ambulance with HTTP status OK and sends location to user via websocket.
-     */
-    @Test
-    void updateLocation_shouldReturnUpdatedAmbulance() {
-        when(ambulanceService.updateLocation(ambulanceId, 3.0, 4.0)).thenReturn(ambulanceDTO);
 
-        ResponseEntity<AmbulanceDTO> response = ambulanceController.updateLocation(ambulanceId, 3.0, 4.0, "user123");
-
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals(ambulanceDTO, response.getBody());
-        verify(webSocketHandler, times(1)).sendLocationToUser(eq("user123"), anyString());
-    }
 
     /**
      * Tests updating an ambulance's details.

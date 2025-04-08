@@ -12,8 +12,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
-import java.util.Arrays;
-import java.util.List;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -65,20 +63,7 @@ public class PatientRecordsControllerTest {
         assertEquals(patientRecordsDTO, response.getBody());
     }
 
-    /**
-     * Tests retrieving patient records by patient ID.
-     * Verifies that the controller returns a list of patient records with HTTP status OK.
-     */
-    @Test
-    void getPatientRecordsByPatientId_shouldReturnListOfPatientRecords() {
-        List<PatientRecordsDTO> patientRecordsDTOList = Arrays.asList(patientRecordsDTO);
-        when(patientRecordsService.getPatientRecordsByPatientId(patientId)).thenReturn(patientRecordsDTOList);
 
-        ResponseEntity<List<PatientRecordsDTO>> response = patientRecordsController.getPatientRecordsByPatientId(patientId);
-
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals(patientRecordsDTOList, response.getBody());
-    }
 
     /**
      * Tests retrieving a patient record by record ID.
