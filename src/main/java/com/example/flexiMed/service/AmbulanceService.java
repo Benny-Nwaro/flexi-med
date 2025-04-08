@@ -206,6 +206,7 @@ public class AmbulanceService {
 
         // Save the estimated arrival time in the request.
         request.setArrivalTime(LocalDateTime.now().plusMinutes(etaInMinutes));
+        request.setDescription(request.getDescription().split(",")[0]);
         requestRepository.save(request);
 
         // Convert the updated request to DTO and include the arrival time in the response.

@@ -40,4 +40,16 @@ public interface RequestRepository extends JpaRepository<RequestEntity, UUID> {
      */
     List<RequestEntity> findByRequestStatus(RequestStatus requestStatus);
 
+    /**
+     * Finds a list of RequestEntity objects associated with a specific ambulance ID
+     * and having a specific request status.
+     *
+     * @param ambulance_id The UUID of the ambulance to search for.
+     * @param requestStatus The {@link RequestStatus} to filter by.
+     * @return A List of RequestEntity objects associated with the given ambulance ID
+     * and having the specified request status.
+     */
+    List<RequestEntity> findByAmbulanceIdAndRequestStatus(UUID ambulance_id, RequestStatus requestStatus);
+
+
 }

@@ -16,6 +16,7 @@ import com.example.flexiMed.utils.GeoUtils;
 import com.example.flexiMed.utils.TimeUtils;
 import jakarta.mail.MessagingException;
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -23,6 +24,7 @@ import org.thymeleaf.context.Context;
 
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 /**
  * Service class for handling ambulance requests.
@@ -85,6 +87,7 @@ public class RequestService {
      */
     public RequestDTO createRequest(RequestDTO request) {
         // Find the user making the request.
+        System.out.println("this is the request" + request.getDescription().toString().split(","));
         UserEntity user = userRepository.findById(request.getUserId())
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
@@ -107,7 +110,7 @@ public class RequestService {
                 savedRequest.getId(),
                 user.getUserId(),
                 userContact,
-                savedRequest.getDescription()
+                savedRequest.getDescription().split(",")[1]
         );
         patientRecordsService.addPatientRecord(patientRecord);
 
@@ -199,7 +202,7 @@ public class RequestService {
         ServiceHistoryDTO service = new ServiceHistoryDTO(null, request.getId(),
                 request.getRequestStatus().toString(),
                 request.getRequestTime(),
-                request.getDescription());
+                request.getDescription().split(",")[0]);
         serviceHistoryService.logEvent(service);
     }
 
@@ -216,6 +219,45 @@ public class RequestService {
             throw new EntityNotFoundException("No requests found for user with ID: " + userId);
         }
         return requests.stream().map(RequestMapper::toDTO).toList();
+    }
+
+    /**
+     * Retrieves all ambulance requests for a specific ambulance ID and with a specific request status.
+     *
+     * @param ambulanceId   The UUID of the ambulance to search for.
+     * @param requestStatus The {@link RequestStatus} to filter by.
+     * @return A list of RequestDTOs associated with the given ambulance ID and having the specified request status.
+     */
+    public List<RequestDTO> getRequestsByAmbulanceIdAndStatus(UUID ambulanceId, RequestStatus requestStatus) {
+        List<RequestEntity> requests = requestRepository.findByAmbulanceIdAndRequestStatus(ambulanceId, requestStatus);
+        return requests.stream().map(RequestMapper::toDTO).collect(Collectors.toList());
+    }
+
+    /**
+     * Updates a request's status to COMPLETED and sets the associated ambulance's availability to true.
+     *
+     * @param requestId The UUID of the request to update.
+     * @return The updated RequestDTO.
+     * @throws EntityNotFoundException If the request or the associated ambulance is not found.
+     */
+    @Transactional
+    public RequestDTO completeRequest(UUID requestId) {
+        RequestEntity requestEntity = requestRepository.findById(requestId)
+                .orElseThrow(() -> new EntityNotFoundException("Request not found with ID: " + requestId));
+
+        requestEntity.setRequestStatus(RequestStatus.COMPLETED);
+        RequestEntity updatedRequest = requestRepository.save(requestEntity);
+
+        UUID ambulanceId = requestEntity.getAmbulance().getId();
+        AmbulanceEntity ambulanceEntity = ambulanceRepository.findById(ambulanceId)
+                .orElseThrow(() -> new EntityNotFoundException("Ambulance not found with ID: " + ambulanceId));
+
+        ambulanceEntity.setAvailabilityStatus(true);
+        ambulanceRepository.save(ambulanceEntity);
+
+        recordServiceHistory(updatedRequest); // Optionally record the completion
+
+        return RequestMapper.toDTO(updatedRequest);
     }
 
 }

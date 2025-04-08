@@ -41,7 +41,6 @@ public class AmbulanceLocationHandler extends TextWebSocketHandler {
      */
     @Override
     public void handleTextMessage(WebSocketSession session, TextMessage message) {
-        // No need to handle incoming messages
     }
 
     /**
@@ -81,7 +80,6 @@ public class AmbulanceLocationHandler extends TextWebSocketHandler {
      * @return The user ID extracted from the query parameters, or "unknown" if not found.
      */
     private String getUserIdFromSession(WebSocketSession session) {
-        // Extract user ID from query params (e.g., ws://localhost:8080/ws/ambulance-updates?userId=USER123)
         String query = session.getUri().getQuery();
         return query != null && query.startsWith("userId=") ? query.split("=")[1] : "unknown";
     }

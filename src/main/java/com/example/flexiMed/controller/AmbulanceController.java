@@ -1,8 +1,10 @@
 package com.example.flexiMed.controller;
+
+import com.example.flexiMed.dto.AmbulanceDTO;
 import com.example.flexiMed.service.AmbulanceService;
 import com.example.flexiMed.websocket.AmbulanceLocationHandler;
-import com.example.flexiMed.dto.AmbulanceDTO;
 import org.springframework.http.ResponseEntity;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
@@ -22,6 +24,8 @@ public class AmbulanceController {
 
     private final AmbulanceService ambulanceService;
     private final AmbulanceLocationHandler webSocketHandler;
+    private final SimpMessagingTemplate messagingTemplate;
+
 
     /**
      * Constructor to inject the required services.
@@ -29,9 +33,11 @@ public class AmbulanceController {
      * @param ambulanceService The service class that handles ambulance-related operations.
      * @param webSocketHandler The WebSocket handler that manages real-time location updates.
      */
-    public AmbulanceController(AmbulanceService ambulanceService, AmbulanceLocationHandler webSocketHandler) {
+    public AmbulanceController(AmbulanceService ambulanceService, AmbulanceLocationHandler webSocketHandler, SimpMessagingTemplate messagingTemplate) {
         this.ambulanceService = ambulanceService;
         this.webSocketHandler = webSocketHandler;
+        this.messagingTemplate = messagingTemplate;
+
     }
 
     /**
@@ -80,11 +86,12 @@ public class AmbulanceController {
         locationData.put("lat", String.valueOf(latitude));
         locationData.put("lng", String.valueOf(longitude));
 
-        // Send location update to the requesting user via WebSocket
-        webSocketHandler.sendLocationToUser(userId, locationData.toString());
+        // Send location update to the requesting user via STOMP (user destination)
+        messagingTemplate.convertAndSendToUser(userId, "/queue/ambulance-location", locationData);
 
         return ResponseEntity.ok(updatedAmbulance);
     }
+
 
     /**
      * Endpoint to update general information of an ambulance, such as availability status, driver's name, and contact.

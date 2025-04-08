@@ -9,9 +9,8 @@ import com.example.flexiMed.repository.PatientRecordsRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 /**
  * Service class for managing patient records.
@@ -32,6 +31,7 @@ public class PatientRecordsService {
 
     /**
      * Adds a new patient record or updates an existing one if a record already exists for the patient.
+     * Assumes at most one primary patient record exists per patient ID.
      *
      * @param patientRecordDTO the DTO containing patient record details
      * @return the saved or updated patient record as a DTO
@@ -40,36 +40,32 @@ public class PatientRecordsService {
     @Transactional
     public PatientRecordsDTO addPatientRecord(PatientRecordsDTO patientRecordDTO) {
         UUID patientId = patientRecordDTO.getPatientId();
-        List<PatientRecordsEntity> existingRecords = patientRecordsRepository.findByPatientId(patientId);
+        Optional<PatientRecordsEntity> existingRecordOptional = patientRecordsRepository.findByPatientId(patientId);
 
-        if (!existingRecords.isEmpty()) {
-            // Update the first matching record
-            PatientRecordsEntity existingEntity = existingRecords.get(0);
-            PatientRecordsDTO updatedRecord = new PatientRecordsDTO(
-                    existingEntity.getId(),
-                    patientRecordDTO.getRequestId(),
-                    patientRecordDTO.getPatientId(),
-                    patientRecordDTO.getContact(),
-                    patientRecordDTO.getMedicalNotes()
-            );
-            return updatePatientRecord(existingEntity.getId(), updatedRecord);
+        if (existingRecordOptional.isPresent()) {
+            // Update the existing record
+            PatientRecordsEntity existingEntity = existingRecordOptional.get();
+            PatientRecordsEntity updatedEntity = PatientRecordsMapper.toEntity(patientRecordDTO);
+            updatedEntity.setId(existingEntity.getId()); // Ensure the ID of the existing entity is preserved
+            try {
+                PatientRecordsEntity savedEntity = patientRecordsRepository.save(updatedEntity);
+                return PatientRecordsMapper.toDTO(savedEntity);
+            } catch (Exception e) {
+                throw new PatientRecordSaveFailedException("Failed to update patient record for patientId: " + patientId, e);
+            }
         } else {
             // Create a new record
-            PatientRecordsEntity entity = new PatientRecordsEntity(
-                    null,
-                    patientRecordDTO.getRequestId(),
-                    patientRecordDTO.getPatientId(),
-                    patientRecordDTO.getContact(),
-                    patientRecordDTO.getMedicalNotes()
-            );
+            PatientRecordsEntity entity = PatientRecordsMapper.toEntity(patientRecordDTO);
+            entity.setId(null); // Ensure a new ID is generated
             try {
                 PatientRecordsEntity savedEntity = patientRecordsRepository.save(entity);
                 return PatientRecordsMapper.toDTO(savedEntity);
             } catch (Exception e) {
-                throw new PatientRecordSaveFailedException("Failed to save patient record", e);
+                throw new PatientRecordSaveFailedException("Failed to save new patient record for patientId: " + patientId, e);
             }
         }
     }
+
 
     /**
      * Retrieves a patient record by its unique ID.
@@ -86,20 +82,17 @@ public class PatientRecordsService {
     }
 
     /**
-     * Retrieves all patient records associated with a specific patient ID.
+     * Retrieves a single patient record associated with a specific patient ID.
+     * Assumes there is at most one primary patient record per patient ID.
      *
      * @param patientId the unique identifier of the patient
-     * @return a list of patient record DTOs
-     * @throws PatientRecordNotFoundException if no records are found
+     * @return the patient record DTO
+     * @throws PatientRecordNotFoundException if no record is found for the patient ID
      */
-    public List<PatientRecordsDTO> getPatientRecordsByPatientId(UUID patientId) {
-        List<PatientRecordsEntity> records = patientRecordsRepository.findByPatientId(patientId);
-
-        if (records.isEmpty()) {
-            throw new PatientRecordNotFoundException("No patient records found for patientId: " + patientId);
-        }
-
-        return records.stream().map(PatientRecordsMapper::toDTO).collect(Collectors.toList());
+    public PatientRecordsDTO getPatientRecordByPatientId(UUID patientId) {
+        PatientRecordsEntity record = patientRecordsRepository.findByPatientId(patientId)
+                .orElseThrow(() -> new PatientRecordNotFoundException("No patient record found for patientId: " + patientId));
+        return PatientRecordsMapper.toDTO(record);
     }
 
     /**

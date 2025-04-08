@@ -2,10 +2,10 @@ package com.example.flexiMed.controller;
 
 import com.example.flexiMed.dto.PatientRecordsDTO;
 import com.example.flexiMed.service.PatientRecordsService;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 import java.util.UUID;
 
 /**
@@ -37,20 +37,9 @@ public class PatientRecordsController {
         return ResponseEntity.ok(patientRecordsService.addPatientRecord(patientDTO));
     }
 
-    /**
-     * Endpoint to retrieve all patient records for a specific patient.
-     *
-     * @param patientId The unique ID of the patient whose records are to be retrieved.
-     * @return A ResponseEntity containing a list of PatientRecordsDTOs for the given patient.
-     */
-    @GetMapping("/patient/{patientId}")
-    public ResponseEntity<List<PatientRecordsDTO>> getPatientRecordsByPatientId(@PathVariable UUID patientId) {
-        List<PatientRecordsDTO> records = patientRecordsService.getPatientRecordsByPatientId(patientId);
-        return ResponseEntity.ok(records);
-    }
 
     /**
-     * Endpoint to retrieve a specific patient record by ID.
+     * Endpoint to retrieve a specific patient record by its unique record ID.
      *
      * @param id The unique ID of the patient record to retrieve.
      * @return A ResponseEntity containing the PatientRecordsDTO for the given record ID.
@@ -62,7 +51,24 @@ public class PatientRecordsController {
     }
 
     /**
-     * Endpoint to update an existing patient record.
+     * Endpoint to retrieve a single patient record by the patient's unique ID.
+     *
+     * @param patientId The unique ID of the patient to retrieve the primary record for.
+     * @return A ResponseEntity containing the PatientRecordsDTO for the given patient ID.
+     */
+    @GetMapping("/by-patient-id/{patientId}")
+    public ResponseEntity<PatientRecordsDTO> getPatientRecordByPatientId(@PathVariable UUID patientId) {
+        try {
+            PatientRecordsDTO record = patientRecordsService.getPatientRecordByPatientId(patientId);
+            return ResponseEntity.ok(record);
+        } catch (Exception e) {
+            // Consider more specific exception handling based on your service layer
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null); // Or a custom error response
+        }
+    }
+
+    /**
+     * Endpoint to update an existing patient record by its unique record ID.
      *
      * @param id The ID of the patient record to update.
      * @param updatedRecord The updated PatientRecordsDTO object.
@@ -78,7 +84,7 @@ public class PatientRecordsController {
     }
 
     /**
-     * Endpoint to delete a patient record by ID.
+     * Endpoint to delete a patient record by its unique record ID.
      *
      * @param id The ID of the patient record to delete.
      * @return A ResponseEntity containing a success message.
