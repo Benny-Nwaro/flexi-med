@@ -114,6 +114,9 @@ public class RequestService {
                 request.getLatitude(), request.getLongitude());
 
         // Send real-time notifications to the user and the ambulance dispatcher.
+        System.out.println("Sending to topic: /topic/ambulance/" + user.getUserId());
+        System.out.println("Payload: " );
+
         notificationService.sendUserNotifications("Ambulance has been dispatched to your location", user,
                 ambulance, TimeUtils.formatTime(etaInMinutes));
         // Send email notification to the requesting user
