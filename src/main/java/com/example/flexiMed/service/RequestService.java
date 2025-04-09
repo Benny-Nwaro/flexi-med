@@ -43,7 +43,6 @@ public class RequestService {
     private final UserRepository userRepository;
     private final PatientRecordsService patientRecordsService;
     private final ServiceHistoryService serviceHistoryService;
-    private final UserService userService;
     private final NotificationService notificationService;
     private final EmailService emailService;
 
@@ -56,7 +55,6 @@ public class RequestService {
      * @param patientRecordsService    Service for managing patient records.
      * @param ambulanceService         Service for managing ambulance operations.
      * @param serviceHistoryService    Service for managing service history logs.
-     * @param userService              Service for managing user operations.
      * @param notificationService      Service for sending notifications.
      */
     public RequestService(RequestRepository requestRepository, AmbulanceRepository ambulanceRepository,
@@ -64,7 +62,6 @@ public class RequestService {
                           PatientRecordsService patientRecordsService,
                           AmbulanceService ambulanceService,
                           ServiceHistoryService serviceHistoryService,
-                          UserService userService,
                           NotificationService notificationService,
                           EmailService emailService) {
         this.requestRepository = requestRepository;
@@ -73,7 +70,6 @@ public class RequestService {
         this.userRepository = userRepository;
         this.patientRecordsService = patientRecordsService;
         this.serviceHistoryService = serviceHistoryService;
-        this.userService = userService;
         this.notificationService = notificationService;
         this.emailService = emailService;
     }
@@ -87,7 +83,6 @@ public class RequestService {
      */
     public RequestDTO createRequest(RequestDTO request) {
         // Find the user making the request.
-        System.out.println("this is the request" + request.getDescription().toString().split(","));
         UserEntity user = userRepository.findById(request.getUserId())
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
@@ -102,7 +97,7 @@ public class RequestService {
         RequestEntity savedRequest = requestRepository.save(requestEntity);
 
         // Determine the user's contact information (phone number or email).
-        String userContact = (user.getPhoneNumber() != null) ? user.getPhoneNumber() : user.getEmail();
+        String userContact = (user.getPhoneNumber() != null) ? user.getPhoneNumber() : "08080000000";
 
         // Create and save a patient record associated with the request.
         PatientRecordsDTO patientRecord = new PatientRecordsDTO(
