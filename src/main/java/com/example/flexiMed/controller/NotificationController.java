@@ -27,6 +27,7 @@ public class NotificationController {
      * @param notificationDTO The DTO containing details of the ambulance dispatch.
      */
     public void sendAmbulanceDispatchedNotification(UUID userId, AmbulanceNotificationDTO notificationDTO) {
+        System.out.println("INSIDE sendAmbulanceDispatchedNotification!");
         messagingTemplate.convertAndSend("/topic/ambulance/" + userId, notificationDTO);
     }
 }
