@@ -22,7 +22,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
         registry.addEndpoint("/ws", "/ws/ambulance-updates")
-                .setAllowedOrigins("http://localhost:3000", "https://flexi-med-front-itcp.vercel.app")
+                .setAllowedOriginPatterns("*")
                 .withSockJS();
     }
 
