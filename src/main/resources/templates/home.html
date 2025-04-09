@@ -1,6 +1,6 @@
-<!-- home.html -->
+<!-- src/main/resources/templates/home.html -->
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <title>FlexiMed</title>
@@ -39,8 +39,9 @@
     </style>
 </head>
 <body>
-<img src="https://media0.giphy.com/media/v1.Y2lkPTc5MGI3NjExZXp5YXVib3F0NHVqeThhMGIzazNhd3prdDZwZDJkaGFiZjNuOGNkZCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9cw/o6zSRVY7JRWbX0o0uL/giphy.gif" alt="Ambulance Animation">
-<h1>Welcome to Flexi Medical Dispatch</h1>
-<a href='https://flexi-med-front-itcp.vercel.app/'>Click here to begin</a>
+<img src="https://media0.giphy.com/media/v1.Y2lkPTc5MGI3NjExZXp5YXVib3F0NHVqeThhMGIzazNhd3prdDZwZDJkaGFiZjNuOGNkZCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9cw/o6zSRVY7JRWbX0o0uL/giphy.gif"
+     alt="Ambulance Animation">
+<h1 th:text="${welcomeMessage}">Welcome to Flexi Medical Dispatch</h1>
+<a th:href="@{https://flexi-med-front-itcp.vercel.app/}">Click here to begin</a>
 </body>
 </html>
