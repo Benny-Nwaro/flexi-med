@@ -21,7 +21,7 @@ public class AmbulanceWebSocketConfig implements WebSocketMessageBrokerConfigure
      */
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
-        registry.addEndpoint("/ws/ambulance-updates")
+        registry.addEndpoint("/ws/ambulance-locations")
                 .setAllowedOrigins("http://localhost:3000", "https://flexi-med-front-itcp.vercel.app")
                 .withSockJS();
     }

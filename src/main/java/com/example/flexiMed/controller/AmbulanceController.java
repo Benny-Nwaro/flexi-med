@@ -84,7 +84,7 @@ public class AmbulanceController {
         locationData.put("lng", String.valueOf(longitude));
 
         // Send location update to the requesting user via STOMP (user destination)
-        messagingTemplate.convertAndSendToUser(userId, "/queue/ambulance-location", locationData);
+        messagingTemplate.convertAndSendToUser(userId, "/queue/ambulance-locations", locationData);
 
         // Return the updated ambulance DTO as a response
         return ResponseEntity.ok(updatedAmbulance);
