@@ -23,6 +23,7 @@ public class AmbulanceMapper {
         }
         return new AmbulanceDTO(
                 ambulance.getId(),
+                ambulance.getDriverId(), // Newly added mapping
                 ambulance.getPlateNumber(),
                 ambulance.getLatitude(),
                 ambulance.getLongitude(),
@@ -45,6 +46,7 @@ public class AmbulanceMapper {
         }
         AmbulanceEntity ambulance = new AmbulanceEntity();
         ambulance.setId(dto.getId());
+        ambulance.setDriverId(dto.getDriverId()); // Newly added mapping
         ambulance.setPlateNumber(dto.getPlateNumber());
         ambulance.setLatitude(dto.getLatitude());
         ambulance.setLongitude(dto.getLongitude());

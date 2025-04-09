@@ -28,4 +28,13 @@ public interface AmbulanceRepository extends JpaRepository<AmbulanceEntity, UUID
      * @return A List of AmbulanceEntity objects that are currently available.
      */
     List<AmbulanceEntity> findByAvailabilityStatusIsTrue();
+
+
+    /**
+     * Finds a single AmbulanceEntity assigned to a specific driverId.
+     *
+     * @param driverId The ID of the driver.
+     * @return An Optional containing the AmbulanceEntity assigned to the given driver, or an empty Optional if none are found.
+     */
+    Optional<AmbulanceEntity> findByDriverId(UUID driverId);
 }

@@ -7,7 +7,7 @@ import java.util.UUID;
 /**
  * Data Transfer Object (DTO) for representing ambulance information.
  * This class contains details about the ambulance, such as its plate number, location,
- * driver information, and availability status.
+ * driver information, availability status, and associated driver ID.
  */
 public class AmbulanceDTO {
 
@@ -15,6 +15,12 @@ public class AmbulanceDTO {
      * Unique identifier for the ambulance.
      */
     private UUID id;
+
+    /**
+     * Unique identifier of the driver assigned to the ambulance.
+     * This field can be null if no driver is currently assigned.
+     */
+    private UUID driverId;
 
     /**
      * The plate number of the ambulance.
@@ -75,10 +81,11 @@ public class AmbulanceDTO {
     }
 
     // Constructor with all fields
-    public AmbulanceDTO(UUID id, String plateNumber, Double latitude, Double longitude,
+    public AmbulanceDTO(UUID id, UUID driverId, String plateNumber, Double latitude, Double longitude,
                         boolean availabilityStatus, String driverName,
                         String driverContact, LocalDateTime lastUpdatedAt) {
         this.id = id;
+        this.driverId = driverId;
         this.plateNumber = plateNumber;
         this.latitude = latitude;
         this.longitude = longitude;
@@ -96,6 +103,14 @@ public class AmbulanceDTO {
 
     public void setId(UUID id) {
         this.id = id;
+    }
+
+    public UUID getDriverId() {
+        return driverId;
+    }
+
+    public void setDriverId(UUID driverId) {
+        this.driverId = driverId;
     }
 
     public String getPlateNumber() {

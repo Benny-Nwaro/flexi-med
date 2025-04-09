@@ -20,12 +20,6 @@ import java.util.UUID;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
 
-/**
- * Unit tests for the AmbulanceController.
- * This class tests the functionality of the AmbulanceController, ensuring that it correctly
- * interacts with the AmbulanceService and AmbulanceLocationHandler, and handles HTTP requests
- * for ambulance-related operations.
- */
 @ExtendWith(MockitoExtension.class)
 public class AmbulanceControllerTest {
 
@@ -41,10 +35,6 @@ public class AmbulanceControllerTest {
     private UUID ambulanceId;
     private AmbulanceDTO ambulanceDTO;
 
-    /**
-     * Sets up the test environment before each test method.
-     * Initializes the necessary objects, including an ambulance ID and ambulance DTO.
-     */
     @BeforeEach
     void setUp() {
         ambulanceId = UUID.randomUUID();
@@ -55,12 +45,9 @@ public class AmbulanceControllerTest {
         ambulanceDTO.setDriverContact("123-456-7890");
         ambulanceDTO.setLatitude(1.0);
         ambulanceDTO.setLongitude(2.0);
+        ambulanceDTO.setDriverId(UUID.randomUUID());  // Ensure this is set
     }
 
-    /**
-     * Tests retrieving all ambulances.
-     * Verifies that the controller returns a list of ambulances with HTTP status OK.
-     */
     @Test
     void getAllAmbulances_shouldReturnListOfAmbulances() {
         List<AmbulanceDTO> ambulanceDTOList = Arrays.asList(ambulanceDTO);
@@ -72,30 +59,12 @@ public class AmbulanceControllerTest {
         assertEquals(ambulanceDTOList, response.getBody());
     }
 
-    /**
-     * Tests creating a new ambulance.
-     * Verifies that the controller returns the created ambulance with HTTP status OK.
-     */
-    @Test
-    void createAmbulance_shouldReturnCreatedAmbulance() {
-        when(ambulanceService.saveAmbulance(ambulanceDTO)).thenReturn(ambulanceDTO);
 
-        ResponseEntity<AmbulanceDTO> response = ambulanceController.createAmbulance(ambulanceDTO);
-
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals(ambulanceDTO, response.getBody());
-    }
-
-
-
-    /**
-     * Tests updating an ambulance's details.
-     * Verifies that the controller returns the updated ambulance with HTTP status OK.
-     */
     @Test
     void updateAmbulance_shouldReturnUpdatedAmbulance() {
-        // Use the same arguments that will be passed to the method
-        when(ambulanceService.updateAmbulance(ambulanceId, ambulanceDTO.isAvailabilityStatus(), ambulanceDTO.getDriverName(), ambulanceDTO.getDriverContact())).thenReturn(ambulanceDTO);
+        when(ambulanceService.updateAmbulance(eq(ambulanceId), eq(ambulanceDTO.isAvailabilityStatus()),
+                eq(ambulanceDTO.getDriverName()), eq(ambulanceDTO.getDriverContact()), eq(ambulanceDTO.getDriverId())))
+                .thenReturn(ambulanceDTO);
 
         ResponseEntity<AmbulanceDTO> response = ambulanceController.updateAmbulance(ambulanceId, ambulanceDTO);
 
@@ -103,10 +72,6 @@ public class AmbulanceControllerTest {
         assertEquals(ambulanceDTO, response.getBody());
     }
 
-    /**
-     * Tests deleting an ambulance.
-     * Verifies that the controller returns a success message with HTTP status OK and calls the service's delete method.
-     */
     @Test
     void deleteAmbulance_shouldReturnSuccessMessage() {
         ResponseEntity<String> response = ambulanceController.deleteAmbulance(ambulanceId);

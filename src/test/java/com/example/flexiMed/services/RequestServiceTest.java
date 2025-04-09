@@ -93,64 +93,6 @@ public class RequestServiceTest {
         requestEntity.setRequestStatus(RequestStatus.DISPATCHED);
     }
 
-//    @Test
-//    void createRequest_shouldCreateAndReturnRequestDTO() {
-//        // Arrange: Mocking repository and service calls
-//        when(userRepository.findById(userId)).thenReturn(Optional.of(userEntity));
-//        when(ambulanceRepository.findFirstByAvailabilityStatusIsTrue()).thenReturn(Optional.of(ambulanceEntity));
-//
-//        RequestEntity savedRequestEntity = new RequestEntity();
-//        savedRequestEntity.setId(UUID.randomUUID());
-//        savedRequestEntity.setUser(userEntity);
-//        savedRequestEntity.setAmbulance(ambulanceEntity);
-//        savedRequestEntity.setDescription(requestDTO.getDescription());
-//        savedRequestEntity.setLatitude(requestDTO.getLatitude());
-//        savedRequestEntity.setLongitude(requestDTO.getLongitude());
-//
-//        when(requestRepository.save(any(RequestEntity.class))).thenReturn(savedRequestEntity);
-//        when(ambulanceService.dispatchAmbulance(any(RequestEntity.class))).thenReturn(requestDTO);
-//        when(geoUtils.calculateETA(requestDTO.getLatitude(), requestDTO.getLongitude(), ambulanceEntity.getLatitude(), ambulanceEntity.getLongitude())).thenReturn(10L);
-//        when(timeUtils.formatTime(10L)).thenReturn("10 minutes");
-//        when(userService.getUserByPhoneNumber(ambulanceEntity.getDriverContact())).thenReturn(Optional.of(UserMapper.toDTO(userEntity)));
-//
-//        // Act: Create a request and capture the result
-//        RequestDTO result = requestService.createRequest(requestDTO);
-//
-//        // Assert: Check if the result is not null and description matches
-//        assertNotNull(result);
-//        assertEquals(requestDTO.getDescription(), result.getDescription());
-//
-//        // Capture arguments for patientRecordsService
-//        ArgumentCaptor<PatientRecordsDTO> patientRecordCaptor = ArgumentCaptor.forClass(PatientRecordsDTO.class);
-//        verify(patientRecordsService).addPatientRecord(patientRecordCaptor.capture());
-//        PatientRecordsDTO capturedPatientRecord = patientRecordCaptor.getValue();
-//        assertEquals(requestDTO.getUserId(), capturedPatientRecord.getPatientId());
-//
-//        // Capture arguments for notificationService
-//        ArgumentCaptor<String> notificationMessageCaptor = ArgumentCaptor.forClass(String.class);
-//
-//        // Correct use of matchers in verify
-//        verify(notificationService, times(2))
-//                .sendUserNotifications(notificationMessageCaptor.capture(),
-//                        eq(userEntity),
-//                        eq(ambulanceEntity),
-//                        anyString());
-//
-//        List<String> capturedMessages = notificationMessageCaptor.getAllValues();
-//        assertTrue(capturedMessages.contains("Ambulance has been dispatched to your location"));
-//        assertTrue(capturedMessages.contains("Your ambulance has been dispatched to Lat: " + requestDTO.getLatitude() + " and Long: " + requestDTO.getLongitude()));
-//
-//        // Verify service history and ambulance dispatch interactions
-//        ServiceHistoryDTO expectedServiceHistoryDTO = new ServiceHistoryDTO();
-//        expectedServiceHistoryDTO.setRequestId(savedRequestEntity.getId());
-//        expectedServiceHistoryDTO.setDetails("Request created and ambulance dispatched.");
-//        verify(serviceHistoryService).logEvent(eq(expectedServiceHistoryDTO));
-//        verify(ambulanceService).dispatchAmbulance(eq(savedRequestEntity));
-//    }
-
-
-
-
     @Test
     void createRequest_shouldThrowException_whenUserNotFound() {
         when(userRepository.findById(userId)).thenReturn(Optional.empty());
@@ -192,15 +134,4 @@ public class RequestServiceTest {
 
         assertThrows(EntityNotFoundException.class, () -> requestService.getUserRequests(userId));
     }
-
-//    @Test
-//    void getDispatcher_shouldReturnUserEntity() {
-//        when(userService.getUserByPhoneNumber(anyString())).thenReturn(Optional.of(UserMapper.toDTO(userEntity)));
-//
-//        UserEntity result = requestService.getDispatcher("9876543210");
-//        result.setName("test name");
-//
-//        assertEquals(userEntity, result);
-//    }
-
 }

@@ -34,7 +34,7 @@ public class AmbulanceService {
     private final RequestRepository requestRepository;
 
     /**
-     * Constructs an {@code AmbulanceService} with the specified repositories.
+     * Constructs an AmbulanceService with the specified repositories.
      *
      * @param ambulanceRepository The repository for accessing ambulance records.
      * @param requestRepository   The repository for accessing request records.
@@ -83,22 +83,24 @@ public class AmbulanceService {
     }
 
     /**
-     * Updates an ambulance's availability, driver name, and driver contact.
+     * Updates an ambulance's availability, driver name, driver contact, and driver ID.
      *
      * @param id               The unique identifier of the ambulance.
      * @param availabilityStatus The updated availability status.
      * @param driverName       The updated driver name.
      * @param driverContact    The updated driver contact information.
+     * @param driverId         The updated driver ID.
      * @return The updated AmbulanceDTO.
      * @throws RuntimeException If the ambulance is not found.
      */
     @Transactional
-    public AmbulanceDTO updateAmbulance(UUID id, boolean availabilityStatus, String driverName, String driverContact) {
+    public AmbulanceDTO updateAmbulance(UUID id, boolean availabilityStatus, String driverName, String driverContact, UUID driverId) {
         return ambulanceRepository.findById(id)
                 .map(ambulance -> {
                     ambulance.setAvailabilityStatus(availabilityStatus);
                     ambulance.setDriverName(driverName);
                     ambulance.setDriverContact(driverContact);
+                    ambulance.setDriverId(driverId); // Set the driver ID
                     ambulance.setLastUpdatedAt(LocalDateTime.now());
                     return AmbulanceMapper.toDTO(ambulanceRepository.save(ambulance));
                 })
@@ -109,7 +111,7 @@ public class AmbulanceService {
      * Deletes an ambulance from the database if it is not available.
      *
      * @param id The unique identifier of the ambulance to be deleted.
-     * @throws ErrorResponse.InvalidAmbulanceIdException  If the provided ID is null.
+     * @throws ErrorResponse.InvalidAmbulanceIdException If the provided ID is null.
      * @throws ErrorResponse.AmbulanceNotAvailableException If the ambulance is not found or is available.
      */
     @Transactional
@@ -128,25 +130,47 @@ public class AmbulanceService {
         }
     }
 
-    /**
-     * Updates the geographic location of an ambulance.
-     *
-     * @param id        The unique identifier of the ambulance.
-     * @param latitude  The updated latitude.
-     * @param longitude The updated longitude.
-     * @return The updated AmbulanceDTO.
-     * @throws RuntimeException If the ambulance is not found.
-     */
     @Transactional
     public AmbulanceDTO updateLocation(UUID id, double latitude, double longitude) {
-        return ambulanceRepository.findById(id)
-                .map(ambulance -> {
-                    ambulance.setLatitude(latitude);
-                    ambulance.setLongitude(longitude);
-                    ambulance.setLastUpdatedAt(LocalDateTime.now());
-                    return AmbulanceMapper.toDTO(ambulanceRepository.save(ambulance));
-                })
-                .orElseThrow(() -> new RuntimeException("Ambulance not found with ID: " + id));
+        int maxRetries = 3;
+
+        while (maxRetries-- > 0) {
+            try {
+                return ambulanceRepository.findById(id)
+                        .map(ambulance -> {
+                            ambulance.setLatitude(latitude);
+                            ambulance.setLongitude(longitude);
+                            ambulance.setLastUpdatedAt(LocalDateTime.now());
+                            return AmbulanceMapper.toDTO(ambulanceRepository.save(ambulance));
+                        })
+                        .orElseThrow(() -> new RuntimeException("Ambulance not found with ID: " + id));
+
+            } catch (ObjectOptimisticLockingFailureException e) {
+                if (maxRetries == 0) throw e; // give up after max attempts
+                try {
+                    Thread.sleep(50); // small delay before retry
+                } catch (InterruptedException ignored) {}
+            }
+        }
+
+        throw new RuntimeException("Failed to update ambulance location after retries.");
+    }
+
+
+
+    /**
+     * Finds an ambulance assigned to a specific driver.
+     *
+     * @param driverId The ID of the driver.
+     * @return The AmbulanceDTO containing the details of the assigned ambulance, or an exception if not found.
+     * @throws RuntimeException If no ambulance is found for the given driverId.
+     */
+    public AmbulanceDTO findAmbulanceByDriverId(UUID driverId) {
+        Optional<AmbulanceEntity> ambulance = ambulanceRepository.findByDriverId(driverId);
+
+        return ambulance
+                .map(AmbulanceMapper::toDTO)
+                .orElseThrow(() -> new RuntimeException("No ambulance found for the given driver ID: " + driverId));
     }
 
     /**
@@ -164,9 +188,9 @@ public class AmbulanceService {
             throw new RuntimeException("No available ambulances at the moment");
         }
 
-        // Find the closest ambulance based on location.
         Optional<AmbulanceEntity> closestAmbulance = availableAmbulances.stream()
-                .min(Comparator.comparingDouble(a -> LocationUtils.calculateDistance(userLatitude, userLongitude, a.getLatitude(), a.getLongitude())));
+                .min(Comparator.comparingDouble(a ->
+                        LocationUtils.calculateDistance(userLatitude, userLongitude, a.getLatitude(), a.getLongitude())));
 
         return closestAmbulance
                 .map(AmbulanceMapper::toDTO)
@@ -175,6 +199,8 @@ public class AmbulanceService {
 
     /**
      * Dispatches an ambulance to handle a request.
+     * Updates the request status and the ambulance availability.
+     * Calculates and sets the estimated time of arrival (ETA) based on geographic location.
      *
      * @param request The RequestEntity containing request details.
      * @return The updated RequestDTO with arrival time.
@@ -182,21 +208,21 @@ public class AmbulanceService {
      */
     @Transactional
     public RequestDTO dispatchAmbulance(RequestEntity request) {
-        // Find the closest available ambulance.
+        // Find the closest available ambulance
         AmbulanceDTO ambulanceDTO = findClosestAmbulance(request.getLatitude(), request.getLongitude());
-        AmbulanceEntity ambulance = ambulanceRepository.findById(ambulanceDTO.getId()).orElseThrow(() ->
-                new IllegalArgumentException(("Ambulance not found")));
+        AmbulanceEntity ambulance = ambulanceRepository.findById(ambulanceDTO.getId())
+                .orElseThrow(() -> new IllegalArgumentException("Ambulance not found"));
 
-        // Assign the ambulance to the request and update request status.
+        // Assign the ambulance to the request and update request status
         request.setAmbulance(ambulance);
         request.setRequestStatus(RequestStatus.DISPATCHED);
         request.setDispatchTime(LocalDateTime.now());
 
-        // Update ambulance availability to false.
+        // Update ambulance availability to false
         ambulance.setAvailabilityStatus(false);
         ambulanceRepository.save(ambulance);
 
-        // Calculate estimated time of arrival (ETA).
+        // Calculate estimated time of arrival (ETA)
         double userLatitude = request.getLatitude();
         double userLongitude = request.getLongitude();
         double ambulanceLatitude = ambulance.getLatitude();
@@ -204,12 +230,12 @@ public class AmbulanceService {
 
         long etaInMinutes = GeoUtils.calculateETA(ambulanceLatitude, ambulanceLongitude, userLatitude, userLongitude);
 
-        // Save the estimated arrival time in the request.
+        // Save the estimated arrival time in the request
         request.setArrivalTime(LocalDateTime.now().plusMinutes(etaInMinutes));
         request.setDescription(request.getDescription().split(",")[0]);
         requestRepository.save(request);
 
-        // Convert the updated request to DTO and include the arrival time in the response.
+        // Convert the updated request to DTO and include the arrival time in the response
         RequestDTO responseDTO = RequestMapper.toDTO(request);
         responseDTO.setArrivalTime(request.getArrivalTime());
         return responseDTO;
