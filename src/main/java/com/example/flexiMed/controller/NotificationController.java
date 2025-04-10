@@ -28,6 +28,13 @@ public class NotificationController {
      */
     public void sendAmbulanceDispatchedNotification(UUID userId, AmbulanceNotificationDTO notificationDTO) {
         System.out.println("INSIDE sendAmbulanceDispatchedNotification!");
-        messagingTemplate.convertAndSend("/topic/ambulance/" + userId, notificationDTO);
+
+        // Send to the specific user via a user-specific queue
+        messagingTemplate.convertAndSendToUser(
+                userId.toString(),
+                "/queue/ambulance-locations",
+                notificationDTO
+        );
     }
+
 }
