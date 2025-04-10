@@ -11,15 +11,16 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
         registry.addEndpoint("/ws/ambulance-updates")
-                .setHandshakeHandler(new UserIdHandshakeHandler()) // 👈 Inject custom handler
+                .setHandshakeHandler(new UserIdHandshakeHandler())
                 .setAllowedOriginPatterns("*")
                 .withSockJS();
     }
 
     @Override
     public void configureMessageBroker(MessageBrokerRegistry registry) {
-        registry.setApplicationDestinationPrefixes("/app"); // For sending messages from client
-        registry.enableSimpleBroker("/queue", "/topic");    // For broadcasting messages
-        registry.setUserDestinationPrefix("/user");         // 👈 Needed for convertAndSendToUser
+        registry.setApplicationDestinationPrefixes("/app");
+        registry.enableSimpleBroker("/queue", "/topic")
+                .setHeartbeatValue(new long[]{10000, 10000}); // Set server send and receive heartbeats (in milliseconds)
+        registry.setUserDestinationPrefix("/user");
     }
 }
