@@ -1,13 +1,14 @@
 package com.example.flexiMed.websocket;
 
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.messaging.simp.config.MessageBrokerRegistry;
-import org.springframework.scheduling.annotation.EnableScheduling; // Import this
+import org.springframework.scheduling.TaskScheduler;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 import org.springframework.web.socket.config.annotation.*;
 
 @Configuration
 @EnableWebSocketMessageBroker
-@EnableScheduling // Add this annotation
 public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
     @Override
@@ -24,5 +25,14 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
         registry.enableSimpleBroker("/queue", "/topic")
                 .setHeartbeatValue(new long[]{10000, 10000});
         registry.setUserDestinationPrefix("/user");
+    }
+
+    @Bean
+    public TaskScheduler taskScheduler() {
+        ThreadPoolTaskScheduler defaultTaskScheduler = new ThreadPoolTaskScheduler();
+        defaultTaskScheduler.setPoolSize(1); // You can adjust this
+        defaultTaskScheduler.setThreadNamePrefix("wss-heartbeat-thread-");
+        defaultTaskScheduler.initialize();
+        return defaultTaskScheduler;
     }
 }
