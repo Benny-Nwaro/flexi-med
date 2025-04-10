@@ -31,7 +31,7 @@ public class NotificationController {
 
         // Send to the specific user via a user-specific queue
         messagingTemplate.convertAndSendToUser(
-                userId.toString(),
+                String.valueOf(userId),
                 "/queue/ambulance-locations",
                 notificationDTO
         );
