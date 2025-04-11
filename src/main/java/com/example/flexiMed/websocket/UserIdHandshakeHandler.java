@@ -16,7 +16,7 @@ public class UserIdHandshakeHandler extends DefaultHandshakeHandler {
         if (request instanceof ServletServerHttpRequest servletRequest) {
             String userId = servletRequest.getServletRequest().getParameter("userId");
             if (userId != null) {
-                return () -> userId; // return a Principal with the userId as the name
+                return () -> userId;
             }
         }
         return null;
