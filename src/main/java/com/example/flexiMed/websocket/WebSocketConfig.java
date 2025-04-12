@@ -5,10 +5,14 @@ import org.springframework.messaging.simp.config.MessageBrokerRegistry;
 import org.springframework.web.socket.config.annotation.EnableWebSocketMessageBroker;
 import org.springframework.web.socket.config.annotation.StompEndpointRegistry;
 import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerConfigurer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Configuration
 @EnableWebSocketMessageBroker
 public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
+
+    private static final Logger logger = LoggerFactory.getLogger(WebSocketConfig.class);
 
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
@@ -26,6 +30,11 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
             java.net.URI uri = java.net.URI.create(rabbitmqUrl);
             String host = uri.getHost();
             int port = uri.getPort();
+            if (port == -1 && uri.getScheme().equals("amqps")) {
+                port = 5671; // Default AMQPS port
+                logger.info("Using default AMQPS port: 5671");
+            }
+
             String username = uri.getUserInfo().split(":")[0];
             String password = uri.getUserInfo().split(":")[1];
 
@@ -36,6 +45,9 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
                     .setClientPasscode(password);
             registry.setApplicationDestinationPrefixes("/app");
             registry.setUserDestinationPrefix("/user");
+
+            logger.info("STOMP Broker Relay configured with host: {}, port: {}, user: {}", host, port, username);
+
         } else {
             // Fallback to simple broker if CLOUDAMQP_URL is not available (e.g., in local development)
             registry.enableSimpleBroker("/topic", "/queue");
