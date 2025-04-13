@@ -3,6 +3,7 @@ package com.example.flexiMed.repository;
 import com.example.flexiMed.enums.RequestStatus;
 import com.example.flexiMed.model.RequestEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -50,6 +51,18 @@ public interface RequestRepository extends JpaRepository<RequestEntity, UUID> {
      * and having the specified request status.
      */
     List<RequestEntity> findByAmbulanceIdAndRequestStatus(UUID ambulance_id, RequestStatus requestStatus);
+
+    /**
+     * Counts the number of requests associated with a specific ambulance ID
+     * that have a request status other than 'COMPLETED'.
+     *
+     * @param ambulanceId The UUID of the ambulance.
+     * @param status      The RequestStatus to exclude from the count
+     * (in this case, it should be RequestStatus.COMPLETED).
+     * @return The number of requests associated with the given ambulance ID
+     * that do not have the specified status.
+     */
+    long countByAmbulance_IdAndRequestStatusNot(@Param("ambulanceId") UUID ambulanceId, @Param("status") RequestStatus status);
 
 
 }

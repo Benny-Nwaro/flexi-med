@@ -3,7 +3,6 @@ package com.example.flexiMed.service;
 import com.example.flexiMed.dto.AmbulanceDTO;
 import com.example.flexiMed.dto.RequestDTO;
 import com.example.flexiMed.enums.RequestStatus;
-import com.example.flexiMed.exceptions.ErrorResponse;
 import com.example.flexiMed.mapper.AmbulanceMapper;
 import com.example.flexiMed.mapper.RequestMapper;
 import com.example.flexiMed.model.AmbulanceEntity;
@@ -108,25 +107,23 @@ public class AmbulanceService {
     }
 
     /**
-     * Deletes an ambulance from the database if it is not available.
-     *
-     * @param id The unique identifier of the ambulance to be deleted.
-     * @throws ErrorResponse.InvalidAmbulanceIdException If the provided ID is null.
-     * @throws ErrorResponse.AmbulanceNotAvailableException If the ambulance is not found or is available.
+     * Deletes an ambulance with the specified ID, but only if there are no
+     * incomplete requests associated with that ambulance.
      */
     @Transactional
     public void deleteAmbulance(UUID id) {
+        // Input validation: Ensure the provided ambulance ID is not null.
         if (id == null) {
-            throw new ErrorResponse.InvalidAmbulanceIdException("Ambulance ID cannot be null.");
+            throw new IllegalArgumentException("Ambulance ID cannot be null");
         }
+        // Query the request repository to count the number of requests associated with
+        // the given ambulance ID that are in a status other than 'COMPLETED'.
+        long count = requestRepository.countByAmbulance_IdAndRequestStatusNot(id, RequestStatus.COMPLETED);
 
-        AmbulanceEntity ambulance = ambulanceRepository.findById(id)
-                .orElseThrow(() -> new ErrorResponse.AmbulanceNotAvailableException("Ambulance not found."));
-
-        if (ambulance.isAvailabilityStatus()) {
+        // Conditional deletion: If no incomplete requests are found for the ambulance,
+        // proceed with deleting the ambulance from the ambulance repository.
+        if (count > 0) {
             ambulanceRepository.deleteById(id);
-        } else {
-            throw new ErrorResponse.AmbulanceNotAvailableException("Ambulance is not available for deletion.");
         }
     }
 
