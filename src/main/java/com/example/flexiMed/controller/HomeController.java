@@ -10,7 +10,7 @@ public class HomeController {
     @GetMapping("/")
     public String home(Model model) {
         // Adding a dynamic message to the template
-        model.addAttribute("welcomeMessage", "Welcome to Flexi Medical Dispatch");
+        model.addAttribute("welcomeMessage", "Flexi Medical Dispatch");
         return "home"; // This will resolve to /templates/home.html
     }
 }
