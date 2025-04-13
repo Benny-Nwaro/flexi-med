@@ -123,7 +123,7 @@ public class AmbulanceService {
         AmbulanceEntity ambulance = ambulanceRepository.findById(id)
                 .orElseThrow(() -> new ErrorResponse.AmbulanceNotAvailableException("Ambulance not found."));
 
-        if (!ambulance.isAvailabilityStatus()) {
+        if (ambulance.isAvailabilityStatus()) {
             ambulanceRepository.deleteById(id);
         } else {
             throw new ErrorResponse.AmbulanceNotAvailableException("Ambulance is not available for deletion.");
