@@ -132,38 +132,52 @@ public class RequestService {
 
 
     /**
-     * Sends an email notification to the user who created a new ambulance request.
-     * This method uses the {@link EmailService} to send an email based on the
-     * "ambulance-dispatch" Thymeleaf template, populated with information about
-     * the created request.
+     * Sends an email notification to the user confirming the creation of their ambulance request.
+     * The email includes details such as the request ID, location, estimated time of arrival (ETA),
+     * and the assigned ambulance ID. It utilizes Thymeleaf for email templating.
      *
-     * @param user       The {@link UserEntity} of the user who made the request.
-     * The user's name and email address are extracted from this entity.
-     * @param requestDTO The {@link RequestDTO} containing details of the created request,
-     * such as the request ID, latitude, longitude, and associated ambulance ID.
-     * @param eta        A string representing the estimated time of arrival of the ambulance.
+     * @param user      The {@link UserEntity} object of the user who created the request.
+     * This is used to personalize the email with the user's name and retrieve their email address.
+     * @param requestDTO The {@link RequestDTO} object containing details of the created request,
+     * such as the request ID, latitude, longitude, and the assigned ambulance ID.
+     * @param eta       A {@link String} representing the estimated time of arrival of the ambulance.
      */
     private void sendRequestCreatedEmail(UserEntity user, RequestDTO requestDTO, String eta) {
         try {
+            // Create a Thymeleaf context to hold the data for the email template.
             Context context = new Context();
-            context.setVariable("name", user.getName()); // User's name for personalization.
-            context.setVariable("requestId", requestDTO.getId()); // Unique identifier of the request.
-            context.setVariable("location", String.format("%.6f, %.6f", requestDTO.getLatitude(),
-                    requestDTO.getLongitude())); // Formatted latitude and longitude of the request.
-            context.setVariable("eta", eta); // Estimated time of arrival of the ambulance.
-            context.setVariable("ambulanceId", requestDTO.getAmbulanceId()); // Identifier of the dispatched ambulance.
 
-            // Use the EmailService to send the email.
+            // Set variables that will be accessible within the 'ambulance-dispatch' email template.
+            context.setVariable("name", user.getName()); // User's name for personalization.
+            context.setVariable("requestId", requestDTO.getId()); // Unique identifier of the created request.
+            context.setVariable("location", String.format("%.6f, %.6f", requestDTO.getLatitude(), requestDTO.getLongitude())); // User's location as latitude and longitude.
+            context.setVariable("eta", eta); // Estimated time of arrival of the ambulance.
+            context.setVariable("ambulanceId", requestDTO.getAmbulanceId()); // Identifier of the ambulance assigned to the request.
+
+            // Use the emailService to send the email.
+            // - user.getEmail(): Recipient's email address.
+            // - "Ambulance Request Created": Subject line of the email.
+            // - "ambulance-dispatch": Name of the Thymeleaf template to be used for the email body.
+            // - context: The data to be rendered within the template.
             emailService.sendEmail(user.getEmail(), "Ambulance Request Created",
                     "ambulance-dispatch", context);
-            logger.info("Email notification sent to user: {} ({}) for Request ID: {}", user.getName(), user.getEmail(),
-                    requestDTO.getId());
 
+            // Log a successful email notification.
+            logger.info("Email notification sent to user: {} ({}) for Request ID: {}", user.getName(), user.getEmail(), requestDTO.getId());
+
+        } catch (org.springframework.mail.MailSendException e) {
+            // Catch specific exception for email sending failures.
+            logger.error("MailSendException: Could not send email to user: {} ({}) - {}", user.getName(), user.getEmail(), e.getMessage());
         } catch (MessagingException e) {
-            logger.error("Error sending email notification to user: {} ({}) for Request ID: {}", user.getName(),
-                    user.getEmail(), requestDTO.getId(), e);
+            // Catch specific exception related to messaging (email) failures.
+            logger.error("MessagingException: Failed to send email to user: {} ({}) - {}", user.getName(), user.getEmail(), e.getMessage());
+        } catch (Exception e) {
+            // Catch any other unexpected exceptions that might occur during the email sending process.
+            logger.error("Unexpected error occurred while sending email to {} ({}): {}", user.getName(), user.getEmail(), e.getMessage(), e);
+            logger.debug("Full exception stack trace:", e); // Log the full stack trace for detailed debugging.
         }
     }
+
 
     /**
      * Retrieves all ambulance requests.
