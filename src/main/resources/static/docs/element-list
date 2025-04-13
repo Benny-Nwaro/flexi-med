@@ -1,5 +1,7 @@
 com.example.flexiMed
-com.example.flexiMed.auth
+com.example.flexiMed.auth.authController
+com.example.flexiMed.auth.authDTO
+com.example.flexiMed.auth.authService
 com.example.flexiMed.config
 com.example.flexiMed.controller
 com.example.flexiMed.controllers

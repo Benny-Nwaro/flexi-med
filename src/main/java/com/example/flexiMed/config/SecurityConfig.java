@@ -1,7 +1,7 @@
 package com.example.flexiMed.config;
 
-import com.example.flexiMed.auth.CustomOAuth2UserService;
-import com.example.flexiMed.auth.OAuth2LoginSuccessHandler;
+import com.example.flexiMed.auth.authService.CustomOAuth2UserService;
+import com.example.flexiMed.auth.authService.OAuth2LoginSuccessHandler;
 import com.example.flexiMed.security.JwtAuthenticationFilter;
 import com.example.flexiMed.security.JwtUtil;
 import com.example.flexiMed.service.UserService;

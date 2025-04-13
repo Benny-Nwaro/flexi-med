@@ -1,4 +1,4 @@
-package com.example.flexiMed.auth;
+package com.example.flexiMed.auth.authDTO;
 
 public class LoginRequest {
     private String email;

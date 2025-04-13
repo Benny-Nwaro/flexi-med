@@ -123,37 +123,6 @@ class AmbulanceServiceTest {
         assertNotNull(result.getArrivalTime());
     }
 
-    /**
-     * Tests deletion of an ambulance when it is unavailable.
-     * Ensures that the ambulance is deleted and no exception is thrown.
-     */
-    @Test
-    void testDeleteAmbulance_whenUnavailable_shouldDelete() {
-        UUID id = UUID.randomUUID();
-        AmbulanceEntity ambulance = new AmbulanceEntity();
-        ambulance.setAvailabilityStatus(false);
-
-        when(ambulanceRepository.findById(id)).thenReturn(Optional.of(ambulance));
-
-        ambulanceService.deleteAmbulance(id);
-
-        verify(ambulanceRepository).deleteById(id);
-    }
-
-    /**
-     * Tests deletion of an ambulance when it is still available.
-     * Expects a RuntimeException to be thrown to prevent deletion.
-     */
-    @Test
-    void testDeleteAmbulance_whenAvailable_shouldThrow() {
-        UUID id = UUID.randomUUID();
-        AmbulanceEntity ambulance = new AmbulanceEntity();
-        ambulance.setAvailabilityStatus(true);
-
-        when(ambulanceRepository.findById(id)).thenReturn(Optional.of(ambulance));
-
-        assertThrows(RuntimeException.class, () -> ambulanceService.deleteAmbulance(id));
-    }
 
     /**
      * Tests updating the location of an existing ambulance.

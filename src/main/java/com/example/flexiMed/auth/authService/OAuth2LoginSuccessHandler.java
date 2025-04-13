@@ -1,4 +1,4 @@
-package com.example.flexiMed.auth;
+package com.example.flexiMed.auth.authService;
 
 import com.example.flexiMed.security.JwtUtil;
 import com.example.flexiMed.dto.UserDTO;
