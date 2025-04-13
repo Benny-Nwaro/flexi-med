@@ -22,4 +22,3 @@ public class UserIdHandshakeHandler extends DefaultHandshakeHandler {
         return null;
     }
 }
-

@@ -152,7 +152,7 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
-        config.setAllowedOriginPatterns(List.of("https://flexi-med-front-b2eb11bb314f.herokuapp.com"));
+        config.setAllowedOriginPatterns(List.of("https://flexi-med-front-b2eb11bb314f.herokuapp.com", "http://localhost:3000"));
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         config.setAllowedHeaders(List.of("*"));
         config.setAllowCredentials(true);

@@ -156,6 +156,23 @@ public class AmbulanceService {
         throw new RuntimeException("Failed to update ambulance location after retries.");
     }
 
+    /**
+     * Retrieves the location (latitude and longitude) of an ambulance by its ID.
+     *
+     * @param ambulanceId The unique identifier of the ambulance.
+     * @return An Optional containing an AmbulanceDTO with only the latitude and longitude,
+     * or an empty Optional if the ambulance is not found.
+     */
+    public Optional<AmbulanceDTO> findAmbulanceLocationById(UUID ambulanceId) {
+        return ambulanceRepository.findById(ambulanceId)
+                .map(ambulance -> {
+                    AmbulanceDTO dto = new AmbulanceDTO();
+                    dto.setLatitude(ambulance.getLatitude());
+                    dto.setLongitude(ambulance.getLongitude());
+                    return dto;
+                });
+    }
+
 
 
     /**

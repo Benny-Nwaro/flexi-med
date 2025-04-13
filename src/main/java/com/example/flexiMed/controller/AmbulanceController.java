@@ -6,10 +6,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 /**
  * Controller class responsible for handling ambulance-related API requests.
@@ -149,5 +146,24 @@ public class AmbulanceController {
 
         // Return a success message
         return ResponseEntity.ok("Ambulance deleted successfully.");
+    }
+
+    /**
+     * Retrieves the location (latitude and longitude) of an ambulance by its ID.
+     *
+     * @param id The unique identifier of the ambulance.
+     * @return A ResponseEntity containing a Map with latitude and longitude,
+     * or a 404 if the ambulance is not found.
+     */
+    @GetMapping("/{id}/location")
+    public ResponseEntity<Map<String, Double>> getLocationById(@PathVariable UUID id) {
+        Optional<AmbulanceDTO> ambulanceLocation = ambulanceService.findAmbulanceLocationById(id);
+
+        return ambulanceLocation.map(dto -> {
+            Map<String, Double> locationMap = new HashMap<>();
+            locationMap.put("latitude", dto.getLatitude());
+            locationMap.put("longitude", dto.getLongitude());
+            return ResponseEntity.ok(locationMap); // 200 OK
+        }).orElse(ResponseEntity.notFound().build()); // 404 Not Found
     }
 }
