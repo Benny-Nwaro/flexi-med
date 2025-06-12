@@ -1,4 +1,4 @@
 -------------------------------------------------------------------------------
 Test set: com.example.flexiMed.FlexiMedTests
 -------------------------------------------------------------------------------
-Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 6.941 s -- in com.example.flexiMed.FlexiMedTests
+Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 7.100 s -- in com.example.flexiMed.FlexiMedTests
