@@ -22,7 +22,7 @@ public class AmbulanceWebSocketConfig implements WebSocketMessageBrokerConfigure
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
         registry.addEndpoint("/ws/ambulance-locations")
-                .setAllowedOrigins("https://flexi-med-front-b2eb11bb314f.herokuapp.com")
+                .setAllowedOrigins("https://flexi-med-front-itcp.vercel.app")
                 .withSockJS();
     }
 

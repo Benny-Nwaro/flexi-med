@@ -45,7 +45,7 @@ public class OAuth2LoginSuccessHandler extends SimpleUrlAuthenticationSuccessHan
 
         String jwtToken = jwtUtil.generateToken(auth); // Pass the Authentication object
 
-        String redirectUrl = UriComponentsBuilder.fromUriString("https://flexi-med-front-b2eb11bb314f.herokuapp.com/")
+        String redirectUrl = UriComponentsBuilder.fromUriString("https://flexi-med-front-itcp.vercel.app/")
                 .queryParam("token", jwtToken)
                 .build().toUriString();
 
