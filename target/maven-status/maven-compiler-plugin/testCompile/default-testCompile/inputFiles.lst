@@ -1,0 +1,16 @@
+/Users/test/Desktop/fullstack web Projects/fleximedbackcopy/flexiMedBackend/src/test/java/com/example/flexiMed/FlexiMedTests.java
+/Users/test/Desktop/fullstack web Projects/fleximedbackcopy/flexiMedBackend/src/test/java/com/example/flexiMed/controllers/AmbulanceControllerTest.java
+/Users/test/Desktop/fullstack web Projects/fleximedbackcopy/flexiMedBackend/src/test/java/com/example/flexiMed/controllers/NotificationControllerTest.java
+/Users/test/Desktop/fullstack web Projects/fleximedbackcopy/flexiMedBackend/src/test/java/com/example/flexiMed/controllers/OpenAiControllerTest.java
+/Users/test/Desktop/fullstack web Projects/fleximedbackcopy/flexiMedBackend/src/test/java/com/example/flexiMed/controllers/PatientRecordsControllerTest.java
+/Users/test/Desktop/fullstack web Projects/fleximedbackcopy/flexiMedBackend/src/test/java/com/example/flexiMed/controllers/RequestControllerTest.java
+/Users/test/Desktop/fullstack web Projects/fleximedbackcopy/flexiMedBackend/src/test/java/com/example/flexiMed/controllers/ServiceHistoryControllerTest.java
+/Users/test/Desktop/fullstack web Projects/fleximedbackcopy/flexiMedBackend/src/test/java/com/example/flexiMed/controllers/UserControllerTest.java
+/Users/test/Desktop/fullstack web Projects/fleximedbackcopy/flexiMedBackend/src/test/java/com/example/flexiMed/services/AmbulanceServiceTest.java
+/Users/test/Desktop/fullstack web Projects/fleximedbackcopy/flexiMedBackend/src/test/java/com/example/flexiMed/services/FileStorageServiceTest.java
+/Users/test/Desktop/fullstack web Projects/fleximedbackcopy/flexiMedBackend/src/test/java/com/example/flexiMed/services/NotificationServiceTest.java
+/Users/test/Desktop/fullstack web Projects/fleximedbackcopy/flexiMedBackend/src/test/java/com/example/flexiMed/services/PatientRecordsServiceTest.java
+/Users/test/Desktop/fullstack web Projects/fleximedbackcopy/flexiMedBackend/src/test/java/com/example/flexiMed/services/RequestServiceTest.java
+/Users/test/Desktop/fullstack web Projects/fleximedbackcopy/flexiMedBackend/src/test/java/com/example/flexiMed/services/ServiceHistoryServiceTest.java
+/Users/test/Desktop/fullstack web Projects/fleximedbackcopy/flexiMedBackend/src/test/java/com/example/flexiMed/services/TogetherAiServiceTest.java
+/Users/test/Desktop/fullstack web Projects/fleximedbackcopy/flexiMedBackend/src/test/java/com/example/flexiMed/services/UserServiceTest.java

@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title th:text="${subject}"></title>
+</head>
+<body>
+<p th:text="${'Hello ' + name + ','}"></p>
+<p>Your ambulance request has been created successfully!</p>
+<p><strong>Request ID:</strong> <span th:text="${requestId}"></span></p>
+<p><strong>Location:</strong> <span th:text="${location}"></span></p>
+<p><strong>Estimated Time of Arrival (ETA):</strong> <span th:text="${eta}"></span></p>
+<p><strong>Ambulance ID:</strong> <span th:text="${ambulanceId}"></span></p>
+<p>We will notify you of any updates regarding your request.</p>
+<p>Thank you for choosing FlexiMed.</p>
+</body>
+</html>

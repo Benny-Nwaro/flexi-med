@@ -1,0 +1,8 @@
+--CREATE TABLE patient_records (
+--    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+--    request_id UUID NOT NULL UNIQUE,
+--    name VARCHAR(100) NOT NULL,
+--    contact VARCHAR(15) NOT NULL,
+--    medical_notes VARCHAR(1000),
+--    CONSTRAINT fk_patient_request FOREIGN KEY (request_id) REFERENCES requests(id) ON DELETE CASCADE
+--);

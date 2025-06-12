@@ -1,0 +1,15 @@
+---- Create Users Table
+--CREATE TABLE users (
+--    user_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+--    name VARCHAR(100) NOT NULL,
+--    email VARCHAR(150) UNIQUE NOT NULL,
+--    password TEXT NOT NULL,
+--    phone_number VARCHAR(15) UNIQUE,
+--    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+--    role VARCHAR(50) NOT NULL CHECK (role IN ('ADMIN', 'DISPATCHER', 'AMBULANCE_DRIVER', 'USER')),
+--    version BIGINT DEFAULT 0
+--);
+--
+---- Create Indexes for Faster Queries
+--CREATE INDEX idx_users_email ON users(email);
+--CREATE INDEX idx_users_phone_number ON users(phone_number);

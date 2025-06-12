@@ -1,0 +1,13 @@
+--CREATE TABLE requests (
+--    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+--    user_id UUID NOT NULL,
+--    ambulance_id UUID,
+--    request_status VARCHAR(50) NOT NULL,
+--    request_time TIMESTAMP WITHOUT TIME ZONE NOT NULL DEFAULT now(),
+--    dispatch_time TIMESTAMP WITHOUT TIME ZONE,
+--    arrival_time TIMESTAMP WITHOUT TIME ZONE,
+--    location VARCHAR(255) NOT NULL,
+--    description TEXT,
+--    CONSTRAINT fk_requests_user FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE,
+--    CONSTRAINT fk_requests_ambulance FOREIGN KEY (ambulance_id) REFERENCES ambulances(id) ON DELETE SET NULL
+--);

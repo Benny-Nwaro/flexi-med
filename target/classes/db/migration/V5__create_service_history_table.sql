@@ -1,0 +1,8 @@
+--CREATE TABLE service_history (
+--    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+--    request_id UUID NOT NULL,
+--    event_type VARCHAR(50) NOT NULL,
+--    event_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
+--    details VARCHAR(500),
+--    CONSTRAINT fk_service_request FOREIGN KEY (request_id) REFERENCES requests(id) ON DELETE CASCADE
+--);

@@ -1,0 +1,9 @@
+--CREATE TABLE ambulances (
+--    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+--    plate_number VARCHAR(15) NOT NULL UNIQUE,
+--    current_location VARCHAR(255) NOT NULL,
+--    availability_status BOOLEAN NOT NULL DEFAULT TRUE,
+--    driver_name VARCHAR(100) NOT NULL,
+--    driver_contact VARCHAR(15) NOT NULL,
+--    last_updated_at TIMESTAMP WITHOUT TIME ZONE DEFAULT now()
+--);
